@@ -1,61 +1,57 @@
-#include <iostream>
-#include <windows.h>
-#include <d3d9.h>
-#include "Imgui/imgui.h"
-#include "Imgui/imgui_impl_dx9.h"
-#include "Imgui/imgui_impl_win32.h"
-#pragma comment(lib,"d3d9.lib")
+#include <imgui.h>
+#include <imgui_impl_dx9.h>
+#include <imgui_impl_win32.h>
 
-namespace OverlayWindow {
+struct OverlayWindow {
     WNDCLASSEX WindowClass;
     HWND Hwnd;
     LPCSTR Name;
-}
+}Overlay;
 
-namespace DirectX9Interface {
-    LPDIRECT3D9 Direct3D9 = NULL;
+struct DirectX9Interface {
+    LPDIRECT3D9 IDirect3D9 = NULL;
     LPDIRECT3DDEVICE9 pDevice = NULL;
-    D3DPRESENT_PARAMETERS pParams = { NULL };
-    MSG Message = { NULL };
-}
+    D3DPRESENT_PARAMETERS pParameters = { NULL };
+    MSG Message = { NULL };    
+}DirectX9;
 
 bool CreateDeviceD3D(HWND hWnd) {
-    if ((DirectX9Interface::Direct3D9 = Direct3DCreate9(D3D_SDK_VERSION)) == NULL) {
+    if ((DirectX9.IDirect3D9 = Direct3DCreate9(D3D_SDK_VERSION)) == NULL) {
         return false;
     }
-    ZeroMemory(&DirectX9Interface::pParams, sizeof(DirectX9Interface::pParams));
-    DirectX9Interface::pParams.Windowed = TRUE;
-    DirectX9Interface::pParams.SwapEffect = D3DSWAPEFFECT_DISCARD;
-    DirectX9Interface::pParams.BackBufferFormat = D3DFMT_UNKNOWN;
-    DirectX9Interface::pParams.EnableAutoDepthStencil = TRUE;
-    DirectX9Interface::pParams.AutoDepthStencilFormat = D3DFMT_D16;
-    DirectX9Interface::pParams.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
-    if (DirectX9Interface::Direct3D9->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &DirectX9Interface::pParams, &DirectX9Interface::pDevice) < 0) {
+    ZeroMemory(&DirectX9.pParameters, sizeof(DirectX9.pParameters));
+    DirectX9.pParameters.Windowed = TRUE;
+    DirectX9.pParameters.SwapEffect = D3DSWAPEFFECT_DISCARD;
+    DirectX9.pParameters.BackBufferFormat = D3DFMT_UNKNOWN;
+    DirectX9.pParameters.EnableAutoDepthStencil = TRUE;
+    DirectX9.pParameters.AutoDepthStencilFormat = D3DFMT_D16;
+    DirectX9.pParameters.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
+    if (DirectX9.IDirect3D9->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &DirectX9.pParameters, &DirectX9.pDevice) < 0) {
         return false;
     }
     return true;
 }
 
 void ClearD3D() {
-    if (DirectX9Interface::pDevice) {
-        DirectX9Interface::pDevice->Release();
-        DirectX9Interface::pDevice = NULL;
+    if (DirectX9.pDevice) {
+        DirectX9.pDevice->Release();
+        DirectX9.pDevice = NULL;
     }
 
-    if (DirectX9Interface::Direct3D9) {
-        DirectX9Interface::Direct3D9->Release();
-        DirectX9Interface::Direct3D9 = NULL;
+    if (DirectX9.IDirect3D9) {
+        DirectX9.IDirect3D9->Release();
+        DirectX9.IDirect3D9 = NULL;
     }
 }
 
 void ClearAll() {
     ClearD3D();
-    UnregisterClass(OverlayWindow::WindowClass.lpszClassName, OverlayWindow::WindowClass.hInstance);
+    UnregisterClass(Overlay.WindowClass.lpszClassName, Overlay.WindowClass.hInstance);
 }
 
 void ResetDevice() {
     ImGui_ImplDX9_InvalidateDeviceObjects();
-    HRESULT hr = DirectX9Interface::pDevice->Reset(&DirectX9Interface::pParams);
+    HRESULT hr = DirectX9.pDevice->Reset(&DirectX9.pParameters);
     if (hr == D3DERR_INVALIDCALL) {
         IM_ASSERT(0);
     }
@@ -69,9 +65,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
     switch (msg) {
     case WM_SIZE:
-        if (DirectX9Interface::pDevice != NULL && wParam != SIZE_MINIMIZED) {
-            DirectX9Interface::pParams.BackBufferWidth = LOWORD(lParam);
-            DirectX9Interface::pParams.BackBufferHeight = HIWORD(lParam);
+        if (DirectX9.pDevice != NULL && wParam != SIZE_MINIMIZED) {
+            DirectX9.pParameters.BackBufferWidth = LOWORD(lParam);
+            DirectX9.pParameters.BackBufferHeight = HIWORD(lParam);
             ResetDevice();
         }
         return 0;

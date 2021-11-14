@@ -1,8 +1,7 @@
 # ImGuiWin32
 ImGui for External Window
 
-
-![Screenshot](https://raw.githubusercontent.com/inc-Majdev/ImGuiWin32/main/ImGuiWin32/Image/Screenshot.png)
+![Screenshot](https://i.imgur.com/b7aGjHi.png)
 
 ## Built With
 * [ImGui v1.83](https://github.com/ocornut/imgui) - Dear ImGui: Bloat-free Immediate Mode Graphical User interface for C++ with minimal dependencies
