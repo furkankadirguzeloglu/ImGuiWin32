@@ -17,7 +17,6 @@ bool isWindowVisible = true;
 WNDCLASSEX windowClass;
 HWND overlayWindow;
 
-std::string targetProcessName = "D3D9Test.exe";
 std::string ovarlayName = generateRandomString(generateRandomInt(30, 100));
 
 IDirect3DDevice9Ex* pDevice = nullptr;
